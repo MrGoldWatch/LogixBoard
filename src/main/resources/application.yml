@@ -1,0 +1,6 @@
+micronaut:
+  application:
+    name: logixboard
+
+db:
+  jdbc-url: ${JDBC_URL}

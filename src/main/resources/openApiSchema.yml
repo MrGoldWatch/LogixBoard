@@ -1,0 +1,218 @@
+openapi: 3.0.0
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/MrGoldWatch/LogixBoard/1.0.0
+info:
+  description: LogixBoard Assessment
+  version: "1.0.0"
+  title: LogixBoard
+  # contact:
+    # email: @gmail.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: Shipment
+    description: All shipment things
+  - name: organization
+    description: All organization things
+  - name: aggregate
+paths:
+  /shipment:
+    post:
+      tags:
+        - shipment
+      summary: creates shipment entry in database
+      operationId: addShipment
+      description: Creates shipment entry in database
+      responses:
+        '201':
+          description: entry created
+        '400':
+          description: 'invalid input, object invalid'
+        '409':
+          description: an existing item already exists
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Shipment'
+        description: Inventory item to add
+  /shipment/{shipmentId}:
+    get:
+      tags:
+        - shipment
+      summary: get shipment info
+      operationId: getShipment
+      description: |
+        get shipment info
+      parameters:
+        - name: shipmentId
+          in: path
+          description: shipment ID
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TotalWeight'
+        '400':
+          description: bad input parameter
+
+  /organization:
+    post:
+      tags:
+        - organization
+      summary: adds organization to database
+      operationId: addOrganization
+      description: adds organization to database
+      responses:
+        '201':
+          description: entry created
+        '400':
+          description: 'invalid input, object invalid'
+        '409':
+          description: an existing item already exists
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Organization'
+        description: Inventory item to add
+  /organization/{organizationId}:
+    get:
+      tags:
+        - organization
+      summary: get organization info from database
+      operationId: getOrganization
+      description: get organization info from database
+      parameters:
+        - name: organizationId
+          in: path
+          description: organization ID
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TotalWeight'
+        '400':
+          description: bad input parameter
+
+  /aggregation:
+    post:
+      tags:
+        - ag
+      summary: get organization info from database
+      operationId: getAggregation
+      description: get aggregation info from database
+      responses:
+        '200':
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WeightAggregate'
+        '400':
+          description: bad input parameter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Aggregate'
+        description: Inventory item to add
+components:
+  schemas:
+
+    Organization:
+      type: object
+      required:
+        - id
+        - code
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        code:
+          type: string
+          example: BOG
+
+    Organizations:
+      type: array
+      items:
+        type: string
+
+    TotalWeight:
+      type: object
+      properties:
+        totalWeight:
+          type: object
+          properties:
+            weight:
+              type: integer
+            unit:
+              type: string
+              enum: [ KILOGRAMS, OUNCES, POUNDS ]
+
+    WeightAggregate:
+      type: object
+      properties:
+        weight:
+          type: number
+        unit:
+          type: string
+          enum: [ KILOGRAMS, OUNCES, POUNDS ]
+
+    Aggregate:
+      type: object
+      properties:
+        unit:
+          type: string
+          enum: [ KILOGRAMS, OUNCES, POUNDS ]
+
+    Shipment:
+      type: object
+      required:
+        - referenceId
+        - organizations
+        - transportPacks
+        - estimatedTimeArrival
+      properties:
+        referenceId:
+          type: string
+          example: S00001175
+        organizations:
+          type: array
+          items:
+            type: string
+        estimatedTimeArrival:
+          type: string
+          example: |
+            2020-11-20T00:00:00
+        transportPacks:
+          type: object
+          properties:
+            nodes:
+              type: array
+              items:
+                $ref: '#/components/schemas/TotalWeight'
